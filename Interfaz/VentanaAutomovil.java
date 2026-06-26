@@ -1,221 +1,177 @@
 package Interfaz;
 
-import Entidades.Automovil;
 import Entidades.ClaseDeVehiculo;
 import Entidades.Combustibles;
 import Entidades.Marca;
 import Entidades.TipoVehiculo;
+import LogicaDeNegocio.AdministradorAutomovil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
-public class VentanaAutomovil {
+public class VentanaAutomovil extends VentanaFormulario {
 
-    public static Automovil solicitarAutomovil(List<ClaseDeVehiculo> clasesVehiculo) {
+    private JTextField txtModelo;
+    private JTextField txtNumeroVin;
+    private JTextField txtNumeroPlaca;
+    private JTextField txtAnio;
 
-        if (clasesVehiculo == null || clasesVehiculo.isEmpty()) {
+    private JComboBox<Marca> cmbMarca;
+    private JComboBox<Combustibles> cmbCombustible;
+    private JComboBox<TipoVehiculo> cmbTipoVehiculo;
+    private JComboBox<ClaseDeVehiculo> cmbClaseVehiculo;
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    "No existen clases de vehículo registradas. Debe registrar una clase de vehículo primero.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+    private AdministradorAutomovil administrador;
 
-            return null;
+    public VentanaAutomovil(AdministradorAutomovil administrador, List<ClaseDeVehiculo> clasesVehiculo) {
+
+        super("Nuevo Vehículo");
+
+        this.administrador = administrador;
+
+        for (ClaseDeVehiculo clase : clasesVehiculo) {
+            cmbClaseVehiculo.addItem(clase);
         }
 
-        while (true) {
-
-            JTextField txtModelo = new JTextField(20);
-            JTextField txtVin = new JTextField(20);
-            JTextField txtPlaca = new JTextField(20);
-            JTextField txtAnio = new JTextField(20);
-
-            JComboBox<Marca> cmbMarca = new JComboBox<>(Marca.values());
-            JComboBox<Combustibles> cmbCombustible = new JComboBox<>(Combustibles.values());
-            JComboBox<TipoVehiculo> cmbTipoVehiculo = new JComboBox<>(TipoVehiculo.values());
-
-            JComboBox<ClaseDeVehiculo> cmbClaseVehiculo =
-                    new JComboBox<>(clasesVehiculo.toArray(new ClaseDeVehiculo[0]));
-
-            JPanel panel = new JPanel(new GridBagLayout());
-
-            GridBagConstraints gbc = new GridBagConstraints();
-
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            panel.add(new JLabel("Modelo:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(txtModelo, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            panel.add(new JLabel("Número VIN:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(txtVin, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            panel.add(new JLabel("Número de Placa:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(txtPlaca, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            panel.add(new JLabel("Año:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(txtAnio, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 4;
-            panel.add(new JLabel("Marca:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(cmbMarca, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 5;
-            panel.add(new JLabel("Combustible:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(cmbCombustible, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 6;
-            panel.add(new JLabel("Tipo Vehículo:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(cmbTipoVehiculo, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 7;
-            panel.add(new JLabel("Clase Vehículo:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(cmbClaseVehiculo, gbc);
-
-            int resultado = JOptionPane.showConfirmDialog(
-                    null,
-                    panel,
-                    "Nuevo Vehículo",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-            );
-
-            if (resultado != JOptionPane.OK_OPTION) {
-                return null;
-            }
-
-            StringBuilder errores = new StringBuilder();
-
-            String modelo = txtModelo.getText().trim();
-            String vin = txtVin.getText().trim();
-            String placa = txtPlaca.getText().trim();
-
-            if (modelo.isBlank()) {
-                errores.append("- Debe ingresar el modelo.\n");
-            }
-
-            if (vin.isBlank()) {
-                errores.append("- Debe ingresar el número VIN.\n");
-            }
-
-            if (placa.isBlank()) {
-                errores.append("- Debe ingresar el número de placa.\n");
-            }
-
-            if (vin.length() > 0 && vin.length() < 5) {
-                errores.append("- El número VIN es demasiado corto.\n");
-            }
-
-            if (placa.length() > 0 && placa.length() < 4) {
-                errores.append("- El número de placa es demasiado corto.\n");
-            }
-
-            if (cmbMarca.getSelectedItem() == null) {
-                errores.append("- Debe seleccionar una marca.\n");
-            }
-
-            if (cmbCombustible.getSelectedItem() == null) {
-                errores.append("- Debe seleccionar un combustible.\n");
-            }
-
-            if (cmbTipoVehiculo.getSelectedItem() == null) {
-                errores.append("- Debe seleccionar un tipo de vehículo.\n");
-            }
-
-            if (cmbClaseVehiculo.getSelectedItem() == null) {
-                errores.append("- Debe seleccionar una clase de vehículo.\n");
-            }
-
-            int anio = 0;
-
-            try {
-
-                String valorAnio = txtAnio.getText().trim();
-
-                if (valorAnio.isBlank()) {
-
-                    errores.append("- Debe ingresar el año.");
-
-                } else {
-
-                    anio = Integer.parseInt(valorAnio);
-
-                    if (anio < 1950 || anio > LocalDate.now().getYear() + 1) {
-                        errores.append("- El año ingresado no es válido.\n");
-                    }
-                }
-
-            } catch (NumberFormatException e) {
-
-                errores.append("- El año debe ser numérico.\n");
-            }
-
-            if (!errores.isEmpty()) {
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        errores.toString(),
-                        "Errores de Validación",
-                        JOptionPane.ERROR_MESSAGE
-                );
-
-                continue;
-            }
-
-            Automovil nuevoAutomovil = new Automovil(
-                    modelo,
-                    LocalDate.of(anio, 1, 1),
-                    vin,
-                    placa,
-                    (Combustibles) cmbCombustible.getSelectedItem(),
-                    (TipoVehiculo) cmbTipoVehiculo.getSelectedItem(),
-                    (ClaseDeVehiculo) cmbClaseVehiculo.getSelectedItem(),
-                    (Marca) cmbMarca.getSelectedItem()
-            );
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Vehículo registrado exitosamente.\n\n" +
-                            "Marca: " + cmbMarca.getSelectedItem() + "\n" +
-                            "Modelo: " + modelo + "\n" +
-                            "Placa: " + placa,
-                    "Registro Exitoso",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            return nuevoAutomovil;
-        }
     }
+
+    @Override
+    protected void inicializarComponentes() {
+
+        txtModelo = new JTextField(20);
+        txtNumeroVin = new JTextField(20);
+        txtNumeroPlaca = new JTextField(20);
+        txtAnio = new JTextField(20);
+
+        cmbMarca = new JComboBox<>(Marca.values());
+        cmbCombustible = new JComboBox<>(Combustibles.values());
+        cmbTipoVehiculo = new JComboBox<>(TipoVehiculo.values());
+        cmbClaseVehiculo = new JComboBox<>();
+
+        agregarComponente(new JLabel("Modelo:"), txtModelo, 0, 0);
+        agregarComponente(new JLabel("Marca:"), cmbMarca, 0, 1);
+
+        agregarComponente(new JLabel("Número VIN:"), txtNumeroVin, 1, 0);
+        agregarComponente(new JLabel("Combustible:"), cmbCombustible, 1, 1);
+
+        agregarComponente(new JLabel("Número de Placa:"), txtNumeroPlaca, 2, 0);
+        agregarComponente(new JLabel("Tipo Vehículo:"), cmbTipoVehiculo, 2, 1);
+
+        agregarComponente(new JLabel("Año:"), txtAnio, 3, 0);
+        agregarComponente(new JLabel("Clase Vehículo:"), cmbClaseVehiculo, 3, 1);
+
+    }
+
+    @Override
+    protected boolean validarCampos() {
+
+        StringBuilder errores = new StringBuilder();
+
+        if (txtModelo.getText().trim().isEmpty()) {
+            errores.append("- Debe ingresar el modelo.\n");
+        }
+
+        if (txtNumeroVin.getText().trim().isEmpty()) {
+            errores.append("- Debe ingresar el número VIN.\n");
+        }
+
+        if (txtNumeroPlaca.getText().trim().isEmpty()) {
+            errores.append("- Debe ingresar el número de placa.\n");
+        }
+
+        if (txtNumeroVin.getText().trim().length() > 0 &&
+                txtNumeroVin.getText().trim().length() < 5) {
+
+            errores.append("- El número VIN es demasiado corto.\n");
+        }
+
+        if (txtNumeroPlaca.getText().trim().length() > 0 &&
+                txtNumeroPlaca.getText().trim().length() < 4) {
+
+            errores.append("- El número de placa es demasiado corto.\n");
+        }
+
+        try {
+
+            int anio = Integer.parseInt(txtAnio.getText().trim());
+
+            if (anio < 1950 || anio > LocalDate.now().getYear() + 1) {
+                errores.append("- El año ingresado no es válido.\n");
+            }
+
+        } catch (Exception e) {
+
+            errores.append("- Debe ingresar un año válido.\n");
+
+        }
+
+        if (cmbMarca.getSelectedItem() == null) {
+            errores.append("- Debe seleccionar una marca.\n");
+        }
+
+        if (cmbCombustible.getSelectedItem() == null) {
+            errores.append("- Debe seleccionar un combustible.\n");
+        }
+
+        if (cmbTipoVehiculo.getSelectedItem() == null) {
+            errores.append("- Debe seleccionar un tipo de vehículo.\n");
+        }
+
+        if (cmbClaseVehiculo.getSelectedItem() == null) {
+            errores.append("- Debe seleccionar una clase de vehículo.\n");
+        }
+
+        if (!errores.isEmpty()) {
+
+            mostrarMensajeError(errores.toString());
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+    @Override
+    protected void guardar() {
+
+        administrador.registrarAutomovil(
+                txtModelo.getText().trim(),
+                Integer.parseInt(txtAnio.getText().trim()),
+                txtNumeroVin.getText().trim(),
+                txtNumeroPlaca.getText().trim(),
+                (Combustibles) cmbCombustible.getSelectedItem(),
+                (TipoVehiculo) cmbTipoVehiculo.getSelectedItem(),
+                (ClaseDeVehiculo) cmbClaseVehiculo.getSelectedItem(),
+                (Marca) cmbMarca.getSelectedItem()
+        );
+
+        mostrarMensajeInformacion("Vehículo registrado exitosamente.");
+
+        limpiarCampos();
+
+    }
+
+    @Override
+    protected void limpiarCampos() {
+
+        txtModelo.setText("");
+        txtNumeroVin.setText("");
+        txtNumeroPlaca.setText("");
+        txtAnio.setText("");
+
+        cmbMarca.setSelectedIndex(0);
+        cmbCombustible.setSelectedIndex(0);
+        cmbTipoVehiculo.setSelectedIndex(0);
+
+        if (cmbClaseVehiculo.getItemCount() > 0) {
+            cmbClaseVehiculo.setSelectedIndex(0);
+        }
+
+        txtModelo.requestFocus();
+
+    }
+
 }

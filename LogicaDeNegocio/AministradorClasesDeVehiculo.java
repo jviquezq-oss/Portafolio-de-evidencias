@@ -12,11 +12,10 @@ public class AministradorClasesDeVehiculo {
     public static List<ClaseDeVehiculo> getClasesDeVehiculo(){
         return clasesDeVehiculo;
     }
-    public static void agregarClaseVehiculo(){
-        ClaseDeVehiculo nuevaClaseVehiculo = Interfaz.VentanaClaseVehiculo.solicitarClaseVehiculo();
-        if(nuevaClaseVehiculo != null){
-            clasesDeVehiculo.add(nuevaClaseVehiculo);
-        }
+    public void registrarClaseVehiculo(String nombre, String descripcion, double precioPorDia){
+        ClaseDeVehiculo nuevaClase = new ClaseDeVehiculo(nombre, descripcion, precioPorDia);
+        clasesDeVehiculo.add(nuevaClase);
+
     }
     public static void modificarClaseVehiculo(){
         VentanaModificarClaseVehiculo.modificarClaseVehiculo(clasesDeVehiculo);

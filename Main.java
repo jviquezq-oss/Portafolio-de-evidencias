@@ -1,4 +1,5 @@
 import Interfaz.VentanaAutomovil;
+import Interfaz.VentanaClaseVehiculo;
 import LogicaDeNegocio.AdministradorAutomovil;
 import LogicaDeNegocio.AministradorClasesDeVehiculo;
 
@@ -8,8 +9,7 @@ import java.util.ArrayList;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        AministradorClasesDeVehiculo.agregarClaseVehiculo();
-        AdministradorAutomovil.registrarVehiculo();
-        AdministradorAutomovil.modificarAutomovil();
+        new VentanaClaseVehiculo(new AministradorClasesDeVehiculo()).setVisible(true);
+        new VentanaAutomovil(new AdministradorAutomovil(),AministradorClasesDeVehiculo.getClasesDeVehiculo()).setVisible(true);
     }
 }

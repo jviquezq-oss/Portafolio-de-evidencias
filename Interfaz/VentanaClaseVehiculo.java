@@ -1,121 +1,131 @@
 package Interfaz;
 
-import Entidades.ClaseDeVehiculo;
+import LogicaDeNegocio.AministradorClasesDeVehiculo;
 
 import javax.swing.*;
-import java.awt.*;
 
-public class VentanaClaseVehiculo {
+public class VentanaClaseVehiculo extends VentanaFormulario {
 
-    public static ClaseDeVehiculo solicitarClaseVehiculo() {
+    private JTextField txtNombre;
+    private JTextArea txtDescripcion;
+    private JTextField txtPrecioPorDia;
 
-        while (true) {
+    private AministradorClasesDeVehiculo administrador;
 
-            JTextField txtNombre = new JTextField(20);
-            JTextField txtPrecioPorDia = new JTextField(20);
+    public VentanaClaseVehiculo(AministradorClasesDeVehiculo administrador) {
 
-            JTextArea txtDescripcion = new JTextArea(4, 20);
-            txtDescripcion.setLineWrap(true);
-            txtDescripcion.setWrapStyleWord(true);
+        super("Nueva Clase de Vehículo");
 
-            JScrollPane scrollDescripcion = new JScrollPane(txtDescripcion);
+        this.administrador = administrador;
 
-            JPanel panel = new JPanel(new GridBagLayout());
+    }
 
-            GridBagConstraints gbc = new GridBagConstraints();
 
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+    @Override
+    protected boolean validarCampos() {
 
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            panel.add(new JLabel("Nombre:"), gbc);
+        StringBuilder errores = new StringBuilder();
 
-            gbc.gridx = 1;
-            panel.add(txtNombre, gbc);
+        if(txtNombre.getText().trim().isEmpty()){
+            errores.append("- Debe ingresar el nombre.\n");
+        }
 
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            panel.add(new JLabel("Precio por Día:"), gbc);
+        if(txtDescripcion.getText().trim().isEmpty()){
+            errores.append("- Debe ingresar una descripción.\n");
+        }
 
-            gbc.gridx = 1;
-            panel.add(txtPrecioPorDia, gbc);
+        if(txtPrecioPorDia.getText().trim().isEmpty()){
 
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            gbc.anchor = GridBagConstraints.NORTH;
+            errores.append("- Debe ingresar el precio por día.\n");
 
-            panel.add(new JLabel("Descripción:"), gbc);
+        }else{
 
-            gbc.gridx = 1;
-            panel.add(scrollDescripcion, gbc);
+            try{
 
-            int resultado = JOptionPane.showConfirmDialog(
-                    null,
-                    panel,
-                    "Nueva Clase de Vehículo",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-            );
+                double precio = Double.parseDouble(txtPrecioPorDia.getText().trim());
 
-            if (resultado != JOptionPane.OK_OPTION) {
-                return null;
-            }
-
-            StringBuilder errores = new StringBuilder();
-
-            String nombre = txtNombre.getText().trim();
-            String descripcion = txtDescripcion.getText().trim();
-
-            if (nombre.isBlank()) {
-                errores.append("- Debe ingresar el nombre de la clase.\n");
-            }
-
-            if (descripcion.isBlank()) {
-                errores.append("- Debe ingresar una descripción.\n");
-            }
-
-            double precioPorDia = 0;
-
-            try {
-
-                String precioTexto = txtPrecioPorDia.getText().trim();
-
-                if (precioTexto.isBlank()) {
-
-                    errores.append("- Debe ingresar el precio por día.\n");
-
-                } else {
-
-                    precioPorDia = Double.parseDouble(precioTexto);
-
-                    if (precioPorDia <= 0) {
-                        errores.append("- El precio por día debe ser mayor que cero.\n");
-                    }
+                if(precio<=0){
+                    errores.append("- El precio por día debe ser mayor que cero.\n");
                 }
 
-            } catch (NumberFormatException e) {
+            }catch(NumberFormatException e){
 
                 errores.append("- El precio por día debe ser numérico.\n");
+
             }
 
-            if (!errores.isEmpty()) {
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        errores.toString(),
-                        "Errores de Validación",
-                        JOptionPane.ERROR_MESSAGE
-                );
-
-                continue;
-            }
-
-            return new ClaseDeVehiculo(
-                    nombre,
-                    descripcion,
-                    precioPorDia
-            );
         }
+
+        if(!errores.isEmpty()){
+
+            mostrarMensajeError(errores.toString());
+
+            return false;
+
+        }
+
+        return true;
+
     }
+    @Override
+    protected void inicializarComponentes() {
+
+        txtNombre = new JTextField(20);
+
+        txtDescripcion = new JTextArea(5, 20);
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+
+        txtPrecioPorDia = new JTextField(20);
+
+        agregarComponente(
+                new JLabel("Nombre:"),
+                txtNombre,
+                0,
+                0
+        );
+
+        agregarComponente(
+                new JLabel("Precio por Día:"),
+                txtPrecioPorDia,
+                1,
+                0
+        );
+
+        agregarComponente(
+                new JLabel("Descripción:"),
+                new JScrollPane(txtDescripcion),
+                2,
+                0
+        );
+
+    }
+
+    @Override
+    protected void guardar() {
+
+        administrador.registrarClaseVehiculo(
+                txtNombre.getText().trim(),
+                txtDescripcion.getText().trim(),
+                Double.parseDouble(txtPrecioPorDia.getText().trim()));
+
+        mostrarMensajeInformacion(
+                "La clase de vehículo fue registrada exitosamente."
+        );
+
+        limpiarCampos();
+
+    }
+
+    @Override
+    protected void limpiarCampos() {
+
+        txtNombre.setText("");
+        txtDescripcion.setText("");
+        txtPrecioPorDia.setText("");
+
+        txtNombre.requestFocus();
+
+    }
+
 }
