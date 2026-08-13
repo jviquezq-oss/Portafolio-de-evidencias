@@ -4,17 +4,28 @@ public class ClaseDeVehiculo {
     private String nombre;
     private String descripcion;
     private double precioPorDia;
-
+    private int idClase;
+    public ClaseDeVehiculo(int idClase,String nombre, String descripcion, double precioPorDia) {
+        this.idClase = idClase;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precioPorDia = precioPorDia;
+    }
     public ClaseDeVehiculo(String nombre, String descripcion, double precioPorDia) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precioPorDia = precioPorDia;
     }
 
+    public int gerIdClase(){
+        return this.idClase;
+    }
+    public void setIdClase(int idClase){
+        this.idClase = idClase;
+    }
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }

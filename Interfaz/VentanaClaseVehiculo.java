@@ -1,54 +1,54 @@
 package Interfaz;
 
-import LogicaDeNegocio.AministradorClasesDeVehiculo;
+import Excepciones.ExcepcionDeNegocio;
+import LogicaDeNegocio.Controlador;
 
 import javax.swing.*;
 
 public class VentanaClaseVehiculo extends VentanaFormulario {
 
+    private final Controlador controlador;
+
     private JTextField txtNombre;
     private JTextArea txtDescripcion;
     private JTextField txtPrecioPorDia;
 
-    private AministradorClasesDeVehiculo administrador;
-
-    public VentanaClaseVehiculo(AministradorClasesDeVehiculo administrador) {
+    public VentanaClaseVehiculo(Controlador controlador) {
 
         super("Nueva Clase de Vehículo");
 
-        this.administrador = administrador;
+        this.controlador = controlador;
 
     }
-
 
     @Override
     protected boolean validarCampos() {
 
         StringBuilder errores = new StringBuilder();
 
-        if(txtNombre.getText().trim().isEmpty()){
+        if (txtNombre.getText().trim().isEmpty()) {
             errores.append("- Debe ingresar el nombre.\n");
         }
 
-        if(txtDescripcion.getText().trim().isEmpty()){
+        if (txtDescripcion.getText().trim().isEmpty()) {
             errores.append("- Debe ingresar una descripción.\n");
         }
 
-        if(txtPrecioPorDia.getText().trim().isEmpty()){
+        if (txtPrecioPorDia.getText().trim().isEmpty()) {
 
             errores.append("- Debe ingresar el precio por día.\n");
 
-        }else{
+        } else {
 
-            try{
+            try {
 
                 double precio = Double.parseDouble(txtPrecioPorDia.getText().trim());
 
-                if(precio<=0){
+                if (precio <= 0) {
                     errores.append("- El precio por día debe ser mayor que cero.\n");
                 }
 
-            }catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
 
                 errores.append("- El precio por día debe ser numérico.\n");
 
@@ -56,7 +56,7 @@ public class VentanaClaseVehiculo extends VentanaFormulario {
 
         }
 
-        if(!errores.isEmpty()){
+        if (!errores.isEmpty()) {
 
             mostrarMensajeError(errores.toString());
 
@@ -67,6 +67,7 @@ public class VentanaClaseVehiculo extends VentanaFormulario {
         return true;
 
     }
+
     @Override
     protected void inicializarComponentes() {
 
@@ -104,16 +105,25 @@ public class VentanaClaseVehiculo extends VentanaFormulario {
     @Override
     protected void guardar() {
 
-        administrador.registrarClaseVehiculo(
-                txtNombre.getText().trim(),
-                txtDescripcion.getText().trim(),
-                Double.parseDouble(txtPrecioPorDia.getText().trim()));
+        try {
 
-        mostrarMensajeInformacion(
-                "La clase de vehículo fue registrada exitosamente."
-        );
+            controlador.registrarClaseVehiculo(
+                    txtNombre.getText().trim(),
+                    txtDescripcion.getText().trim(),
+                    Double.parseDouble(txtPrecioPorDia.getText().trim())
+            );
 
-        limpiarCampos();
+            mostrarMensajeInformacion(
+                    "La clase de vehículo fue registrada exitosamente."
+            );
+
+            limpiarCampos();
+
+        } catch (ExcepcionDeNegocio e) {
+
+            mostrarMensajeError(e.getMessage());
+
+        }
 
     }
 

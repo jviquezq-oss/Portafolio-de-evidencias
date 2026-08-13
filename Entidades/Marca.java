@@ -1,11 +1,13 @@
 package Entidades;
 
 public enum Marca {
-    Toyota,
-    Hyundai,
-    Tesla,
-    Nissan,
-    Dodge,
-    MercedesBenz,
-    BMW;
+
+    TOYOTA,
+    HYUNDAI,
+    TESLA,
+    NISSAN,
+    DODGE,
+    MERCEDESBENZ,
+    BMW
+
 }

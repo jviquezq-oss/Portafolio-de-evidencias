@@ -1,11 +1,13 @@
 package Entidades;
 
 public enum TipoVehiculo {
-    Sedan,
+
+    SEDAN,
     SUV,
-    Microbus,
-    Compacto,
-    Crossover,
-    TodoTerreno,
-    PickUp;
+    MICROBUS,
+    COMPACTO,
+    CROSSOVER,
+    TODOTERRENO,
+    PICKUP
+
 }

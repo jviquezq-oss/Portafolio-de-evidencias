@@ -4,21 +4,21 @@ import java.time.LocalDate;
 
 public class Cliente {
     private String identificacion;
-    private String nacionalidad;
+    private Nacionalidad nacionalidad;
     private LocalDate fechaDeNacimiento;
     private String nombre;
     private String primerApellido;
-    private String SegundoApellido;
+    private String segundoApellido;
     private String correoElectronico;
     private String numeroTelefono;
 
-    public Cliente(String identificacion, String nacionalidad, LocalDate fechaDeNacimiento, String nombre, String primerApellido, String segundoApellido, String correoElectronico, String numeroTelefono) {
+    public Cliente(String identificacion, Nacionalidad nacionalidad, LocalDate fechaDeNacimiento, String nombre, String primerApellido, String segundoApellido, String correoElectronico, String numeroTelefono) {
         this.identificacion = identificacion;
         this.nacionalidad = nacionalidad;
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.nombre = nombre;
         this.primerApellido = primerApellido;
-        SegundoApellido = segundoApellido;
+        this.segundoApellido = segundoApellido;
         this.correoElectronico = correoElectronico;
         this.numeroTelefono = numeroTelefono;
     }
@@ -27,7 +27,7 @@ public class Cliente {
         return identificacion;
     }
 
-    public String getNacionalidad() {
+    public Nacionalidad getNacionalidad() {
         return nacionalidad;
     }
 
@@ -52,11 +52,11 @@ public class Cliente {
     }
 
     public String getSegundoApellido() {
-        return SegundoApellido;
+        return segundoApellido;
     }
-
+    public String getNombreCompleto(){return this.nombre+" "+this.primerApellido+" "+this.segundoApellido;}
     public void setSegundoApellido(String segundoApellido) {
-        SegundoApellido = segundoApellido;
+        this.segundoApellido = segundoApellido;
     }
 
     public String getCorreoElectronico() {
@@ -77,15 +77,6 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return "Cliente{" +
-                "identificacion='" + identificacion + '\'' +
-                ", nacionalidad='" + nacionalidad + '\'' +
-                ", fechaDeNacimiento=" + fechaDeNacimiento +
-                ", nombre='" + nombre + '\'' +
-                ", primerApellido='" + primerApellido + '\'' +
-                ", SegundoApellido='" + SegundoApellido + '\'' +
-                ", correoElectronico='" + correoElectronico + '\'' +
-                ", numeroTelefono='" + numeroTelefono + '\'' +
-                '}';
+        return this.identificacion+" - "+this.nombre+" "+this.primerApellido+" "+this.segundoApellido;
     }
 }

@@ -1,41 +1,77 @@
 package Entidades;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 
 public class Factura {
 
-    private static int consecutivoFacturas;
     private int numeroFactura;
+    private Reserva reserva;
     private LocalDate fechaEmision;
-    private String nombreCliente;
-    private String cedulaCliente;
-    private String nombreVendedor;
-    private String modeloVehiculo;
-    private String placaVehiculo;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFinalizacion;
-    private List<ServiciosComplementarios> serviciosComplementarios;
     private double subtotal;
+    private double impuesto;
     private double total;
 
-    public Factura(String nombreCliente, String cedulaCliente, String nombreVendedor, String modeloVehiculo, String placaVehiculo, LocalDate fechaInicio, LocalDate fechaFinalizacion, List<ServiciosComplementarios> serviciosComplementarios, double subtotal, double total) {
-
-        consecutivoFacturas++;
-        this.numeroFactura = consecutivoFacturas;
+    public Factura(Reserva reserva, double subtotal, double impuesto, double total) {
+        this.reserva = reserva;
         this.fechaEmision = LocalDate.now();
-        this.nombreCliente = nombreCliente;
-        this.cedulaCliente = cedulaCliente;
-        this.nombreVendedor = nombreVendedor;
-        this.modeloVehiculo = modeloVehiculo;
-        this.placaVehiculo = placaVehiculo;
-        this.fechaInicio = fechaInicio;
-        this.fechaFinalizacion = fechaFinalizacion;
-        this.serviciosComplementarios = serviciosComplementarios;
-
         this.subtotal = subtotal;
+        this.impuesto = impuesto;
+        this.total = total;
+    }
+    public Factura(int numeroFactura, Reserva reserva, LocalDate fechaEmision, double subtotal, double impuesto, double total) {
+        this.numeroFactura = numeroFactura;
+        this.reserva = reserva;
+        this.fechaEmision = fechaEmision;
+        this.subtotal = subtotal;
+        this.impuesto = impuesto;
+        this.total = total;
+    }
+
+    public int getNumeroFactura() {
+        return numeroFactura;
+    }
+
+    public void setNumeroFactura(int numeroFactura) {
+        this.numeroFactura = numeroFactura;
+    }
+
+    public Reserva getReserva() {
+        return reserva;
+    }
+
+    public void setReserva(Reserva reserva) {
+        this.reserva = reserva;
+    }
+
+    public LocalDate getFechaEmision() {
+        return fechaEmision;
+    }
+
+    public void setFechaEmision(LocalDate fechaEmision) {
+        this.fechaEmision = fechaEmision;
+    }
+
+    public double getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(double subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public double getImpuesto() {
+        return impuesto;
+    }
+
+    public void setImpuesto(double impuesto) {
+        this.impuesto = impuesto;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
         this.total = total;
     }
 
@@ -44,38 +80,30 @@ public class Factura {
         System.out.println("==================================================");
         System.out.println("FACTURA");
         System.out.println("==================================================");
+
         System.out.println("Numero Factura: " + numeroFactura);
         System.out.println("Fecha Emision: " + fechaEmision);
 
         System.out.println("\nCLIENTE");
-        System.out.println("Nombre: " + nombreCliente);
-        System.out.println("Cedula: " + cedulaCliente);
+        System.out.println("Nombre: " + reserva.getCliente().getNombreCompleto());
+        System.out.println("Cedula: " + reserva.getCliente().getIdentificacion());
 
         System.out.println("\nVENDEDOR");
-        System.out.println("Nombre: " + nombreVendedor);
+        System.out.println("Nombre: " + reserva.getVendedor().getNombreCompleto());
 
         System.out.println("\nVEHICULO");
-        System.out.println("Modelo: " + modeloVehiculo);
-        System.out.println("Placa: " + placaVehiculo);
+        System.out.println("Modelo: " + reserva.getAutomovil().getModelo());
+        System.out.println("Placa: " + reserva.getAutomovil().getNumeroPlaca());
 
         System.out.println("\nRESERVA");
-        System.out.println("Fecha Inicio: " + fechaInicio);
-        System.out.println("Fecha Finalizacion: " + fechaFinalizacion);
-
-        System.out.println("\nSERVICIOS COMPLEMENTARIOS");
-
-        if (serviciosComplementarios.isEmpty()) {
-            System.out.println("No hay servicios complementarios.");
-        } else {
-            for (ServiciosComplementarios servicio : serviciosComplementarios) {
-                System.out.println("- " + servicio.getNombre() + " : ₡" + servicio.getPrecioPorDia());
-            }
-        }
+        System.out.println("Fecha Inicio: " + reserva.getFechaInicio());
+        System.out.println("Fecha Finalizacion: " + reserva.getFechaFinalizacion());
 
         System.out.println("\nTOTALES");
         System.out.println("Subtotal: ₡" + subtotal);
+        System.out.println("Impuesto: ₡" + impuesto);
         System.out.println("Total: ₡" + total);
+
         System.out.println("==================================================");
     }
 }
-

@@ -1,7 +1,9 @@
 package Entidades;
 
 public enum Combustibles {
-    Gasolina,
-    Diesel,
-    Electricto;
+
+    GASOLINA,
+    DIESEL,
+    ELECTRICTO
+
 }

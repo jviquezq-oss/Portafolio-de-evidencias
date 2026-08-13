@@ -58,6 +58,8 @@ public abstract class VentanaFormulario extends JFrame {
 
         pack();
         setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     protected void agregarComponente(Component etiqueta,
@@ -128,6 +130,16 @@ public abstract class VentanaFormulario extends JFrame {
     protected void cerrarVentana() {
 
         dispose();
+
+    }
+    protected JTextField crearCampoSoloLectura() {
+
+        JTextField campo = new JTextField(20);
+
+        campo.setEditable(false);
+        campo.setFocusable(false);
+
+        return campo;
 
     }
 

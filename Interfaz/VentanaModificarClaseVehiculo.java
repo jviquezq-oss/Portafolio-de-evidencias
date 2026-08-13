@@ -1,159 +1,153 @@
 package Interfaz;
 
 import Entidades.ClaseDeVehiculo;
+import Excepciones.ExcepcionDeNegocio;
+import LogicaDeNegocio.Controlador;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 
-public class VentanaModificarClaseVehiculo {
+public class VentanaModificarClaseVehiculo extends VentanaFormulario {
 
-    public static void modificarClaseVehiculo(List<ClaseDeVehiculo> clasesVehiculo) {
+    private JTextField txtNombre;
+    private JTextArea txtDescripcion;
+    private JTextField txtPrecioPorDia;
 
-        if (clasesVehiculo == null || clasesVehiculo.isEmpty()) {
+    private final Controlador controlador;
+    private final ClaseDeVehiculo claseVehiculo;
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    "No existen clases de vehículo registradas.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+    public VentanaModificarClaseVehiculo(Controlador controlador, ClaseDeVehiculo claseVehiculo) {
 
-            return;
-        }
+        super("Modificar Clase de Vehículo");
 
-        ClaseDeVehiculo claseSeleccionada = (ClaseDeVehiculo) JOptionPane.showInputDialog(
-                null,
-                "Seleccione la clase de vehículo que desea modificar:",
-                "Modificar Clase de Vehículo",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                clasesVehiculo.toArray(),
-                clasesVehiculo.get(0)
+        this.controlador = controlador;
+        this.claseVehiculo = claseVehiculo;
+
+        cargarDatos();
+
+    }
+
+    @Override
+    protected void inicializarComponentes() {
+
+        txtNombre = new JTextField(20);
+
+        txtDescripcion = new JTextArea(5, 20);
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+
+        txtPrecioPorDia = new JTextField(20);
+
+        agregarComponente(
+                new JLabel("Nombre:"),
+                txtNombre,
+                0,
+                0
         );
 
-        if (claseSeleccionada == null) {
-            return;
+        agregarComponente(
+                new JLabel("Precio por Día:"),
+                txtPrecioPorDia,
+                1,
+                0
+        );
+
+        agregarComponente(
+                new JLabel("Descripción:"),
+                new JScrollPane(txtDescripcion),
+                2,
+                0
+        );
+
+    }
+
+    private void cargarDatos() {
+
+        txtNombre.setText(claseVehiculo.getNombre());
+
+        txtDescripcion.setText(claseVehiculo.getDescripcion());
+
+        txtPrecioPorDia.setText(String.valueOf(claseVehiculo.getPrecioPorDia()));
+
+    }
+
+    @Override
+    protected boolean validarCampos() {
+
+        StringBuilder errores = new StringBuilder();
+
+        if (txtNombre.getText().trim().isEmpty()) {
+            errores.append("- Debe ingresar el nombre.\n");
         }
 
-        while (true) {
+        if (txtDescripcion.getText().trim().isEmpty()) {
+            errores.append("- Debe ingresar la descripción.\n");
+        }
 
-            JTextField txtNombre = new JTextField(claseSeleccionada.getNombre(), 20);
+        if (txtPrecioPorDia.getText().trim().isEmpty()) {
 
-            JTextField txtPrecioPorDia =
-                    new JTextField(String.valueOf(claseSeleccionada.getPrecioPorDia()), 20);
+            errores.append("- Debe ingresar el precio por día.\n");
 
-            JTextArea txtDescripcion =
-                    new JTextArea(claseSeleccionada.getDescripcion(), 4, 20);
-
-            txtDescripcion.setLineWrap(true);
-            txtDescripcion.setWrapStyleWord(true);
-
-            JScrollPane scrollDescripcion =
-                    new JScrollPane(txtDescripcion);
-
-            JPanel panel = new JPanel(new GridBagLayout());
-
-            GridBagConstraints gbc = new GridBagConstraints();
-
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            panel.add(new JLabel("Nombre:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(txtNombre, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            panel.add(new JLabel("Precio por Día:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(txtPrecioPorDia, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            gbc.anchor = GridBagConstraints.NORTH;
-            panel.add(new JLabel("Descripción:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(scrollDescripcion, gbc);
-
-            int resultado = JOptionPane.showConfirmDialog(
-                    null,
-                    panel,
-                    "Modificar Clase de Vehículo",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-            );
-
-            if (resultado != JOptionPane.OK_OPTION) {
-                return;
-            }
-
-            StringBuilder errores = new StringBuilder();
-
-            String nombre = txtNombre.getText().trim();
-            String descripcion = txtDescripcion.getText().trim();
-
-            if (nombre.isBlank()) {
-                errores.append("- Debe ingresar el nombre.\n");
-            }
-
-            if (descripcion.isBlank()) {
-                errores.append("- Debe ingresar la descripción.\n");
-            }
-
-            double precioPorDia = 0;
+        } else {
 
             try {
 
-                String precioTexto = txtPrecioPorDia.getText().trim();
+                double precio = Double.parseDouble(txtPrecioPorDia.getText().trim());
 
-                if (precioTexto.isBlank()) {
-
-                    errores.append("- Debe ingresar el precio por día.\n");
-
-                } else {
-
-                    precioPorDia = Double.parseDouble(precioTexto);
-
-                    if (precioPorDia <= 0) {
-                        errores.append("- El precio por día debe ser mayor que cero.\n");
-                    }
+                if (precio <= 0) {
+                    errores.append("- El precio debe ser mayor que cero.\n");
                 }
 
             } catch (NumberFormatException e) {
 
-                errores.append("- El precio por día debe ser numérico.\n");
+                errores.append("- El precio debe ser numérico.\n");
+
             }
 
-            if (!errores.isEmpty()) {
+        }
 
-                JOptionPane.showMessageDialog(
-                        null,
-                        errores.toString(),
-                        "Errores de Validación",
-                        JOptionPane.ERROR_MESSAGE
-                );
+        if (!errores.isEmpty()) {
 
-                continue;
-            }
+            mostrarMensajeError(errores.toString());
 
-            claseSeleccionada.setNombre(nombre);
-            claseSeleccionada.setDescripcion(descripcion);
-            claseSeleccionada.setPrecioPorDia(precioPorDia);
+            return false;
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    "La clase de vehículo fue modificada exitosamente.",
-                    "Modificación Exitosa",
-                    JOptionPane.INFORMATION_MESSAGE
+        }
+
+        return true;
+
+    }
+
+    @Override
+    protected void guardar() {
+
+        try {
+
+            controlador.modificarClaseVehiculo(
+                    claseVehiculo,
+                    txtNombre.getText().trim(),
+                    txtDescripcion.getText().trim(),
+                    Double.parseDouble(txtPrecioPorDia.getText().trim())
             );
 
-            return;
+            mostrarMensajeInformacion(
+                    "La clase de vehículo fue modificada correctamente."
+            );
+
+            dispose();
+
+        } catch (ExcepcionDeNegocio e) {
+
+            mostrarMensajeError(e.getMessage());
+
         }
+
     }
+
+    @Override
+    protected void limpiarCampos() {
+
+        cargarDatos();
+
+    }
+
 }

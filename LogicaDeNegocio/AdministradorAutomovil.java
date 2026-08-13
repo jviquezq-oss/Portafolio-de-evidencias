@@ -1,46 +1,126 @@
 package LogicaDeNegocio;
 
+import DAO.AutomovilDAO;
+import DAO.ClaseVehiculoDAO;
 import Entidades.Automovil;
-import Entidades.*;
-import Interfaz.VentanaAutomovil;
-import Interfaz.VentanaEliminarAutomovil;
-import Interfaz.VentanaModificarAutomovil;
+import Entidades.ClaseDeVehiculo;
+import Entidades.Combustibles;
+import Entidades.EstadoAutomovil;
+import Entidades.Marca;
+import Entidades.TipoVehiculo;
 import Excepciones.ExcepcionDeNegocio;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AdministradorAutomovil {
-    private static List<Automovil>automovilesDisponibles = new ArrayList<>();
 
-    public static List<Automovil> getAutomovilesDisponibles(){
-        return automovilesDisponibles;
+    private final AutomovilDAO automovilDAO;
+    private final ClaseVehiculoDAO claseVehiculoDAO;
+
+    public AdministradorAutomovil() {
+
+        automovilDAO = new AutomovilDAO();
+        claseVehiculoDAO = new ClaseVehiculoDAO();
+
     }
 
     public void registrarAutomovil(String modelo, int anio, String numeroVin, String numeroPlaca, Combustibles combustible, TipoVehiculo tipoVehiculo, ClaseDeVehiculo claseVehiculo, Marca marca) throws ExcepcionDeNegocio {
-        for (Automovil automovil : automovilesDisponibles) {
 
-            if (automovil.getNumberoVin().equalsIgnoreCase(numeroVin)) {
-                throw new ExcepcionDeNegocio("Ya existe un vehículo registrado con ese número VIN.");
-            }
-
-            if (automovil.getNumeroPlaca().equalsIgnoreCase(numeroPlaca)) {
-                throw new ExcepcionDeNegocio("Ya existe un vehículo registrado con ese número de placa.");
-            }
-
+        if (automovilDAO.buscar(numeroVin) != null) {
+            throw new ExcepcionDeNegocio("Ya existe un vehículo registrado con ese número VIN.");
         }
 
-        Automovil nuevoAutomovil = new Automovil(modelo, LocalDate.of(anio, 1, 1), numeroVin, numeroPlaca, combustible, tipoVehiculo, claseVehiculo, marca);
+        if (automovilDAO.buscarPorPlaca(numeroPlaca) != null) {
+            throw new ExcepcionDeNegocio("Ya existe un vehículo registrado con ese número de placa.");
+        }
 
-        automovilesDisponibles.add(nuevoAutomovil);
+        if (claseVehiculo == null) {
+            throw new ExcepcionDeNegocio("Debe seleccionar una clase de vehículo.");
+        }
+
+        if (claseVehiculoDAO.buscar(claseVehiculo.gerIdClase()) == null) {
+            throw new ExcepcionDeNegocio("La clase de vehículo no existe.");
+        }
+
+        Automovil nuevoAutomovil =
+                new Automovil(
+                        modelo,
+                        anio,
+                        numeroVin,
+                        numeroPlaca,
+                        combustible,
+                        tipoVehiculo,
+                        claseVehiculo,
+                        marca);
+
+        if (!automovilDAO.registrar(nuevoAutomovil)) {
+            throw new ExcepcionDeNegocio("No fue posible registrar el vehículo.");
+        }
 
     }
 
-    public  void modificarAutomovil(){
-        VentanaModificarAutomovil.modificarAutomovil(automovilesDisponibles,AministradorClasesDeVehiculo.getClasesDeVehiculo());
+    public ArrayList<Automovil> listarAutomoviles() {
+
+        return automovilDAO.listar();
+
     }
-    public  void eliminarAutomovil(){
-        new VentanaEliminarAutomovil(automovilesDisponibles);
+
+    public Automovil buscarAutomovil(String numeroVin) {
+
+        return automovilDAO.buscar(numeroVin);
+
     }
+
+    public void modificarAutomovil(Automovil automovil, Marca marca, TipoVehiculo tipoVehiculo, ClaseDeVehiculo claseVehiculo) throws ExcepcionDeNegocio {
+
+        if (automovil == null) {
+            throw new ExcepcionDeNegocio("El vehículo no existe.");
+        }
+
+        if (marca == null) {
+            throw new ExcepcionDeNegocio("Debe seleccionar una marca.");
+        }
+
+        if (tipoVehiculo == null) {
+            throw new ExcepcionDeNegocio("Debe seleccionar un tipo de vehículo.");
+        }
+
+        if (claseVehiculo == null) {
+            throw new ExcepcionDeNegocio("Debe seleccionar una clase de vehículo.");
+        }
+
+        if (claseVehiculoDAO.buscar(claseVehiculo.gerIdClase()) == null) {
+            throw new ExcepcionDeNegocio("La clase de vehículo no existe.");
+        }
+
+        automovil.setMarca(marca);
+        automovil.setTipoDeVehiculo(tipoVehiculo);
+        automovil.setClaseDeVehiculo(claseVehiculo);
+
+        if (!automovilDAO.modificar(automovil)) {
+            throw new ExcepcionDeNegocio("No fue posible modificar el vehículo.");
+        }
+
+    }
+
+    public void eliminarAutomovil(Automovil automovil) throws ExcepcionDeNegocio {
+
+        if (automovil == null) {
+            throw new ExcepcionDeNegocio("El vehículo no existe.");
+        }
+
+        if (automovil.getEstadoAutomovil() == EstadoAutomovil.ALQUILADO) {
+            throw new ExcepcionDeNegocio("No es posible eliminar un vehículo que actualmente se encuentra alquilado.");
+        }
+
+        if (automovil.getEstadoAutomovil() == EstadoAutomovil.RESERVADO) {
+            throw new ExcepcionDeNegocio("No es posible eliminar un vehículo que actualmente se encuentra reservado.");
+        }
+
+        if (!automovilDAO.eliminar(automovil.getNumeroVin())) {
+            throw new ExcepcionDeNegocio("No fue posible eliminar el vehículo.");
+        }
+
+    }
+
 }

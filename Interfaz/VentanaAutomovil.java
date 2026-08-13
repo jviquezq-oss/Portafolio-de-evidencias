@@ -4,13 +4,16 @@ import Entidades.ClaseDeVehiculo;
 import Entidades.Combustibles;
 import Entidades.Marca;
 import Entidades.TipoVehiculo;
-import LogicaDeNegocio.AdministradorAutomovil;
+import Excepciones.ExcepcionDeNegocio;
+import LogicaDeNegocio.Controlador;
 
 import javax.swing.*;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.ArrayList;
 
 public class VentanaAutomovil extends VentanaFormulario {
+
+    private final Controlador controlador;
 
     private JTextField txtModelo;
     private JTextField txtNumeroVin;
@@ -22,17 +25,13 @@ public class VentanaAutomovil extends VentanaFormulario {
     private JComboBox<TipoVehiculo> cmbTipoVehiculo;
     private JComboBox<ClaseDeVehiculo> cmbClaseVehiculo;
 
-    private AdministradorAutomovil administrador;
-
-    public VentanaAutomovil(AdministradorAutomovil administrador, List<ClaseDeVehiculo> clasesVehiculo) {
+    public VentanaAutomovil(Controlador controlador) {
 
         super("Nuevo Vehículo");
 
-        this.administrador = administrador;
+        this.controlador = controlador;
 
-        for (ClaseDeVehiculo clase : clasesVehiculo) {
-            cmbClaseVehiculo.addItem(clase);
-        }
+        cargarClasesVehiculo();
 
     }
 
@@ -63,6 +62,19 @@ public class VentanaAutomovil extends VentanaFormulario {
 
     }
 
+    private void cargarClasesVehiculo() {
+
+        ArrayList<ClaseDeVehiculo> clasesVehiculo =
+                controlador.listarClasesVehiculo();
+
+        for (ClaseDeVehiculo clase : clasesVehiculo) {
+
+            cmbClaseVehiculo.addItem(clase);
+
+        }
+
+    }
+
     @Override
     protected boolean validarCampos() {
 
@@ -84,12 +96,14 @@ public class VentanaAutomovil extends VentanaFormulario {
                 txtNumeroVin.getText().trim().length() < 5) {
 
             errores.append("- El número VIN es demasiado corto.\n");
+
         }
 
         if (txtNumeroPlaca.getText().trim().length() > 0 &&
                 txtNumeroPlaca.getText().trim().length() < 4) {
 
             errores.append("- El número de placa es demasiado corto.\n");
+
         }
 
         try {
@@ -137,20 +151,30 @@ public class VentanaAutomovil extends VentanaFormulario {
     @Override
     protected void guardar() {
 
-        administrador.registrarAutomovil(
-                txtModelo.getText().trim(),
-                Integer.parseInt(txtAnio.getText().trim()),
-                txtNumeroVin.getText().trim(),
-                txtNumeroPlaca.getText().trim(),
-                (Combustibles) cmbCombustible.getSelectedItem(),
-                (TipoVehiculo) cmbTipoVehiculo.getSelectedItem(),
-                (ClaseDeVehiculo) cmbClaseVehiculo.getSelectedItem(),
-                (Marca) cmbMarca.getSelectedItem()
-        );
+        try {
 
-        mostrarMensajeInformacion("Vehículo registrado exitosamente.");
+            controlador.registrarAutomovil(
+                    txtModelo.getText().trim(),
+                    Integer.parseInt(txtAnio.getText().trim()),
+                    txtNumeroVin.getText().trim(),
+                    txtNumeroPlaca.getText().trim(),
+                    (Combustibles) cmbCombustible.getSelectedItem(),
+                    (TipoVehiculo) cmbTipoVehiculo.getSelectedItem(),
+                    (ClaseDeVehiculo) cmbClaseVehiculo.getSelectedItem(),
+                    (Marca) cmbMarca.getSelectedItem()
+            );
 
-        limpiarCampos();
+            mostrarMensajeInformacion(
+                    "Vehículo registrado exitosamente."
+            );
+
+            limpiarCampos();
+
+        } catch (ExcepcionDeNegocio e) {
+
+            mostrarMensajeError(e.getMessage());
+
+        }
 
     }
 

@@ -4,157 +4,169 @@ import Entidades.Automovil;
 import Entidades.ClaseDeVehiculo;
 import Entidades.Marca;
 import Entidades.TipoVehiculo;
+import Excepciones.ExcepcionDeNegocio;
+import LogicaDeNegocio.Controlador;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
+import java.util.ArrayList;
 
-public class VentanaModificarAutomovil {
+public class VentanaModificarAutomovil extends VentanaFormulario {
 
-    public static void modificarAutomovil(List<Automovil> automoviles, List<ClaseDeVehiculo> clasesVehiculo) {
+    private final Controlador controlador;
+    private final Automovil automovil;
 
-        if (automoviles == null || automoviles.isEmpty()) {
+    private JTextField txtModelo;
+    private JTextField txtAnio;
+    private JTextField txtNumeroVin;
+    private JTextField txtNumeroPlaca;
+    private JTextField txtCombustible;
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    "No existen vehículos registrados.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+    private JComboBox<Marca> cmbMarca;
+    private JComboBox<TipoVehiculo> cmbTipoVehiculo;
+    private JComboBox<ClaseDeVehiculo> cmbClaseVehiculo;
 
-            return;
-        }
+    public VentanaModificarAutomovil(Controlador controlador,
+                                     Automovil automovil) {
 
-        Automovil automovilSeleccionado = (Automovil) JOptionPane.showInputDialog(
-                null,
-                "Seleccione el vehículo que desea modificar:",
-                "Modificar Vehículo",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                automoviles.toArray(),
-                automoviles.get(0)
-        );
+        super("Modificar Vehículo");
 
-        if (automovilSeleccionado == null) {
-            return;
-        }
+        this.controlador = controlador;
+        this.automovil = automovil;
 
-        JComboBox<Marca> cmbMarca = new JComboBox<>(Marca.values());
-        cmbMarca.setSelectedItem(automovilSeleccionado.getMarca());
+        cargarClasesVehiculo();
 
-        JComboBox<TipoVehiculo> cmbTipoVehiculo = new JComboBox<>(TipoVehiculo.values());
-        cmbTipoVehiculo.setSelectedItem(automovilSeleccionado.getTipoDeVehiculo());
+        cargarDatos();
 
-        JComboBox<ClaseDeVehiculo> cmbClaseVehiculo =
-                new JComboBox<>(clasesVehiculo.toArray(new ClaseDeVehiculo[0]));
+    }
 
-        cmbClaseVehiculo.setSelectedItem(automovilSeleccionado.getClaseDeVehiculo());
+    @Override
+    protected void inicializarComponentes() {
 
-        JTextField txtModelo = new JTextField(automovilSeleccionado.getModelo(), 20);
-        JTextField txtAnio = new JTextField(String.valueOf(automovilSeleccionado.getAño().getYear()), 20);
-        JTextField txtVin = new JTextField(automovilSeleccionado.getNumberoVin(), 20);
-        JTextField txtPlaca = new JTextField(automovilSeleccionado.getNumeroPlaca(), 20);
-        JTextField txtCombustible = new JTextField(automovilSeleccionado.getCombustuble().toString(), 20);
-        JTextField txtRentado = new JTextField(automovilSeleccionado.isRentado() ? "Sí" : "No", 20);
+        txtModelo = new JTextField(20);
+        txtAnio = new JTextField(20);
+        txtNumeroVin = new JTextField(20);
+        txtNumeroPlaca = new JTextField(20);
+        txtCombustible = new JTextField(20);
 
         txtModelo.setEditable(false);
         txtAnio.setEditable(false);
-        txtVin.setEditable(false);
-        txtPlaca.setEditable(false);
+        txtNumeroVin.setEditable(false);
+        txtNumeroPlaca.setEditable(false);
         txtCombustible.setEditable(false);
-        txtRentado.setEditable(false);
 
-        JPanel panel = new JPanel(new GridBagLayout());
+        cmbMarca = new JComboBox<>(Marca.values());
+        cmbTipoVehiculo = new JComboBox<>(TipoVehiculo.values());
+        cmbClaseVehiculo = new JComboBox<>();
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        agregarComponente(new JLabel("Modelo:"), txtModelo, 0, 0);
+        agregarComponente(new JLabel("Marca:"), cmbMarca, 0, 1);
 
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        agregarComponente(new JLabel("Año:"), txtAnio, 1, 0);
+        agregarComponente(new JLabel("Tipo:"), cmbTipoVehiculo, 1, 1);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Modelo:"), gbc);
+        agregarComponente(new JLabel("Número VIN:"), txtNumeroVin, 2, 0);
+        agregarComponente(new JLabel("Clase:"), cmbClaseVehiculo, 2, 1);
 
-        gbc.gridx = 1;
-        panel.add(txtModelo, gbc);
+        agregarComponente(new JLabel("Placa:"), txtNumeroPlaca, 3, 0);
+        agregarComponente(new JLabel("Combustible:"), txtCombustible, 3, 1);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Año:"), gbc);
+    }
 
-        gbc.gridx = 1;
-        panel.add(txtAnio, gbc);
+    private void cargarClasesVehiculo() {
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Número VIN:"), gbc);
+        ArrayList<ClaseDeVehiculo> clasesVehiculo =
+                controlador.listarClasesVehiculo();
 
-        gbc.gridx = 1;
-        panel.add(txtVin, gbc);
+        for (ClaseDeVehiculo clase : clasesVehiculo) {
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        panel.add(new JLabel("Número de Placa:"), gbc);
+            cmbClaseVehiculo.addItem(clase);
 
-        gbc.gridx = 1;
-        panel.add(txtPlaca, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        panel.add(new JLabel("Combustible:"), gbc);
-
-        gbc.gridx = 1;
-        panel.add(txtCombustible, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        panel.add(new JLabel("Rentado:"), gbc);
-
-        gbc.gridx = 1;
-        panel.add(txtRentado, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        panel.add(new JLabel("Marca:"), gbc);
-
-        gbc.gridx = 1;
-        panel.add(cmbMarca, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        panel.add(new JLabel("Tipo Vehículo:"), gbc);
-
-        gbc.gridx = 1;
-        panel.add(cmbTipoVehiculo, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 8;
-        panel.add(new JLabel("Clase Vehículo:"), gbc);
-
-        gbc.gridx = 1;
-        panel.add(cmbClaseVehiculo, gbc);
-
-        int resultado = JOptionPane.showConfirmDialog(
-                null,
-                panel,
-                "Modificar Vehículo",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (resultado != JOptionPane.OK_OPTION) {
-            return;
         }
 
-        automovilSeleccionado.setMarca((Marca) cmbMarca.getSelectedItem());
-        automovilSeleccionado.setTipoDeVehiculo((TipoVehiculo) cmbTipoVehiculo.getSelectedItem());
-        automovilSeleccionado.setClaseDeVehiculo((ClaseDeVehiculo) cmbClaseVehiculo.getSelectedItem());
-
-        JOptionPane.showMessageDialog(
-                null,
-                "El vehículo fue modificado exitosamente.",
-                "Modificación Exitosa",
-                JOptionPane.INFORMATION_MESSAGE
-        );
     }
+
+    private void cargarDatos() {
+
+        txtModelo.setText(automovil.getModelo());
+        txtAnio.setText(String.valueOf(automovil.getAnio()));
+        txtNumeroVin.setText(automovil.getNumeroVin());
+        txtNumeroPlaca.setText(automovil.getNumeroPlaca());
+        txtCombustible.setText(automovil.getCombustible().toString());
+
+        cmbMarca.setSelectedItem(automovil.getMarca());
+        cmbTipoVehiculo.setSelectedItem(automovil.getTipoDeVehiculo());
+        cmbClaseVehiculo.setSelectedItem(automovil.getClaseDeVehiculo());
+
+    }
+
+    @Override
+    protected boolean validarCampos() {
+
+        if (cmbMarca.getSelectedItem() == null) {
+
+            mostrarMensajeError(
+                    "Debe seleccionar una marca."
+            );
+
+            return false;
+
+        }
+
+        if (cmbTipoVehiculo.getSelectedItem() == null) {
+
+            mostrarMensajeError(
+                    "Debe seleccionar un tipo de vehículo."
+            );
+
+            return false;
+
+        }
+
+        if (cmbClaseVehiculo.getSelectedItem() == null) {
+
+            mostrarMensajeError(
+                    "Debe seleccionar una clase de vehículo."
+            );
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+    @Override
+    protected void guardar() {
+
+        try {
+
+            controlador.modificarAutomovil(
+                    automovil,
+                    (Marca) cmbMarca.getSelectedItem(),
+                    (TipoVehiculo) cmbTipoVehiculo.getSelectedItem(),
+                    (ClaseDeVehiculo) cmbClaseVehiculo.getSelectedItem()
+            );
+
+            mostrarMensajeInformacion(
+                    "Vehículo modificado correctamente."
+            );
+
+            cerrarVentana();
+
+        } catch (ExcepcionDeNegocio e) {
+
+            mostrarMensajeError(e.getMessage());
+
+        }
+
+    }
+
+    @Override
+    protected void limpiarCampos() {
+
+        cargarDatos();
+
+    }
+
 }

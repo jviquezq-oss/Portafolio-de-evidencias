@@ -1,107 +1,158 @@
 package Entidades;
 
-import java.time.LocalDate;
 import Excepciones.ExcepcionDeNegocio;
 
 public class Automovil {
+
     private String modelo;
-    private LocalDate año;
-    private String numberoVin;
+    private int anio;
+    private String numeroVin;
     private String numeroPlaca;
-    private Combustibles combustuble;
+    private Combustibles combustible;
     private TipoVehiculo tipoDeVehiculo;
     private ClaseDeVehiculo claseDeVehiculo;
     private Marca marca;
-    private boolean rentado = false;
-    private boolean enMantenimiento = false;
+    private EstadoAutomovil estadoAutomovil;
 
-    public Automovil(String modelo, LocalDate año, String numberoVin, String numeroPlaca, Combustibles combustuble, TipoVehiculo tipoDeVehiculo, ClaseDeVehiculo claseDeVehiculo, Marca marca) {
+    public Automovil(String modelo, int anio, String numeroVin, String numeroPlaca, Combustibles combustible, TipoVehiculo tipoDeVehiculo, ClaseDeVehiculo claseDeVehiculo, Marca marca) {
         this.modelo = modelo;
-        this.año = año;
-        this.numberoVin = numberoVin;
+        this.anio = anio;
+        this.numeroVin = numeroVin;
         this.numeroPlaca = numeroPlaca;
-        this.combustuble = combustuble;
+        this.combustible = combustible;
         this.tipoDeVehiculo = tipoDeVehiculo;
         this.claseDeVehiculo = claseDeVehiculo;
         this.marca = marca;
+        this.estadoAutomovil = EstadoAutomovil.DISPONIBLE;
+    }
+
+    public Automovil(String modelo, int anio, String numeroVin, String numeroPlaca, Combustibles combustible, TipoVehiculo tipoDeVehiculo, ClaseDeVehiculo claseDeVehiculo, Marca marca, EstadoAutomovil estadoAutomovil) {
+        this.modelo = modelo;
+        this.anio = anio;
+        this.numeroVin = numeroVin;
+        this.numeroPlaca = numeroPlaca;
+        this.combustible = combustible;
+        this.tipoDeVehiculo = tipoDeVehiculo;
+        this.claseDeVehiculo = claseDeVehiculo;
+        this.marca = marca;
+        this.estadoAutomovil = estadoAutomovil;
     }
 
     public String getModelo() {
         return modelo;
     }
 
-    public LocalDate getAño() {
-        return año;
+    public int getAnio() {
+        return anio;
     }
 
-    public String getNumberoVin() {
-        return numberoVin;
+    public String getNumeroVin() {
+        return numeroVin;
     }
 
     public String getNumeroPlaca() {
         return numeroPlaca;
     }
 
-    public Combustibles getCombustuble() {
-        return combustuble;
-    }
-
-    public boolean isRentado() {
-        return rentado;
-    }
-
-    public ClaseDeVehiculo getClaseDeVehiculo() {
-        return claseDeVehiculo;
-    }
-
-    public void setClaseDeVehiculo(ClaseDeVehiculo claseDeVehiculo) {
-        this.claseDeVehiculo = claseDeVehiculo;
+    public Combustibles getCombustible() {
+        return combustible;
     }
 
     public TipoVehiculo getTipoDeVehiculo() {
         return tipoDeVehiculo;
     }
 
+    public ClaseDeVehiculo getClaseDeVehiculo() {
+        return claseDeVehiculo;
+    }
+
     public Marca getMarca() {
         return marca;
+    }
+
+    public EstadoAutomovil getEstadoAutomovil() {
+        return estadoAutomovil;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public void setAnio(int anio) {
+        this.anio = anio;
+    }
+
+    public void setNumeroVin(String numeroVin) {
+        this.numeroVin = numeroVin;
+    }
+
+    public void setNumeroPlaca(String numeroPlaca) {
+        this.numeroPlaca = numeroPlaca;
+    }
+
+    public void setCombustible(Combustibles combustible) {
+        this.combustible = combustible;
+    }
+
+    public void setTipoDeVehiculo(TipoVehiculo tipoDeVehiculo) {
+        this.tipoDeVehiculo = tipoDeVehiculo;
+    }
+
+    public void setClaseDeVehiculo(ClaseDeVehiculo claseDeVehiculo) {
+        this.claseDeVehiculo = claseDeVehiculo;
     }
 
     public void setMarca(Marca marca) {
         this.marca = marca;
     }
 
-    public void setTipoDeVehiculo(TipoVehiculo tipoDeVehiculo) {
-        this.tipoDeVehiculo = tipoDeVehiculo;
+    public void setEstadoAutomovil(EstadoAutomovil estadoAutomovil) {
+        this.estadoAutomovil = estadoAutomovil;
     }
-    public void rentar(){
-        if(this.rentado){
-            throw new ExcepcionDeNegocio("Este vehiculo ya se encuentra rentado.");
-        } else if (this.enMantenimiento) {
-            throw new ExcepcionDeNegocio("El vehiculo se encuentra en mantenimiento.");
-        }else {
-            this.rentado = true;
+
+    public void rentar() {
+
+        if (estadoAutomovil == EstadoAutomovil.ALQUILADO) {
+            throw new ExcepcionDeNegocio("Este vehículo ya se encuentra alquilado.");
         }
+
+        if (estadoAutomovil == EstadoAutomovil.MANTENIMIENTO) {
+            throw new ExcepcionDeNegocio("El vehículo se encuentra en mantenimiento.");
+        }
+
+        estadoAutomovil = EstadoAutomovil.ALQUILADO;
     }
-    public void liberarVehiculo(){
-        if(this.rentado){
-            this.rentado = false;
-        }else{
-            throw new ExcepcionDeNegocio("Este vehiculo no se ecuentra rentado.");
+
+    public void reservar() {
+
+        if (estadoAutomovil != EstadoAutomovil.DISPONIBLE) {
+            throw new ExcepcionDeNegocio("El vehículo no se encuentra disponible para reservar.");
         }
+
+        estadoAutomovil = EstadoAutomovil.RESERVADO;
+    }
+
+    public void liberarVehiculo() {
+
+        if (estadoAutomovil == EstadoAutomovil.DISPONIBLE) {
+            throw new ExcepcionDeNegocio("El vehículo ya se encuentra disponible.");
+        }
+
+        estadoAutomovil = EstadoAutomovil.DISPONIBLE;
+    }
+
+    public void enviarAMantenimiento() {
+
+        if (estadoAutomovil == EstadoAutomovil.ALQUILADO) {
+            throw new ExcepcionDeNegocio("No es posible enviar un vehículo alquilado a mantenimiento.");
+        }
+
+        estadoAutomovil = EstadoAutomovil.MANTENIMIENTO;
     }
 
     @Override
     public String toString() {
-        return "Automovil{" +
-                "modelo='" + modelo + '\'' +
-                ", año=" + año +
-                ", numberoVin='" + numberoVin + '\'' +
-                ", numeroPlaca='" + numeroPlaca + '\'' +
-                ", combustuble=" + combustuble +
-                ", tipoDeVehiculo=" + tipoDeVehiculo +
-                ", claseDeVehiculo=" + claseDeVehiculo +
-                ", rentado=" + rentado +
-                ", enMantenimiento=" + enMantenimiento +
-                '}';
+        return marca + " " + modelo;
     }
+
 }
